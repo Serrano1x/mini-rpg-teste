@@ -1,5 +1,12 @@
 import tkinter as tk
+from typing import Optional
 
+# Constantes de teclas
+KEY_YES = "Y"
+KEY_NO = "N"
+KEY_RESTART = "R"
+
+# Estrutura das cenas do jogo
 cenas = [
     {
         "imagem": "🌲🌫️🌲\n🌫️🙎‍♂️🌫️\n🌲🌫️🌲",
@@ -46,58 +53,68 @@ cenas = [
 ]
 
 class JogoRPG:
-    def __init__(self, root):
+    def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("Mini RPG")
         self.root.configure(bg="black")
         self.root.geometry("600x300")
 
-        self.label = tk.Label(root, text="", fg="white", bg="black", justify="left")
+        self.label = tk.Label(
+            root, text="", fg="white", bg="black", justify="left", anchor="nw"
+        )
         self.label.pack(padx=20, pady=20, fill="both", expand=True)
-        self.atualizar_fonte()
-        self.root.bind("<Configure>", self.redimensionar_fonte)
 
         self.cena_atual = 0
-        self.mostrando_texto = ""
         self.char_index = 0
 
+        self.atualizar_fonte()
         self.exibir_texto()
+
+        self.root.bind("<Configure>", self.redimensionar_fonte)
         self.root.bind("<Key>", self.tecla_pressionada)
 
     def exibir_texto(self):
+        """Mostra o texto com efeito de digitação."""
         cena = cenas[self.cena_atual]
-        imagem = cena["imagem"] + "\n\n"
-        texto = cena["texto"]
-        completo = imagem + texto
+        completo = f"{cena['imagem']}\n\n{cena['texto']}"
         if self.char_index <= len(completo):
             self.label.config(text=completo[:self.char_index])
             self.char_index += 1
             self.root.after(25, self.exibir_texto)
 
-    def tecla_pressionada(self, event):
-        if event.keysym.upper() == "R":
+    def tecla_pressionada(self, event: tk.Event):
+        """Responde às teclas pressionadas."""
+        key = event.keysym.upper()
+
+        if key == KEY_RESTART:
             self.ir_para_cena(0)
             return
+
+        # Se for cena final, ignora interações
         if cenas[self.cena_atual]["yes"] is None:
             return
-        if event.keysym.upper() == "Y":
+
+        if key == KEY_YES:
             self.ir_para_cena(cenas[self.cena_atual]["yes"])
-        elif event.keysym.upper() == "N":
+        elif key == KEY_NO:
             self.ir_para_cena(cenas[self.cena_atual]["no"])
 
-    def ir_para_cena(self, index):
+    def ir_para_cena(self, index: Optional[int]):
+        """Atualiza a cena atual."""
         if index is not None:
             self.cena_atual = index
             self.char_index = 0
             self.exibir_texto()
 
     def atualizar_fonte(self):
+        """Ajusta o tamanho da fonte de acordo com o tamanho da janela."""
         largura = self.root.winfo_width()
         altura = self.root.winfo_height()
         tamanho = max(10, min(largura // 40, altura // 15))
         self.label.config(font=("Courier", tamanho), wraplength=largura - 50)
 
-    def redimensionar_fonte(self, event):
+    def redimensionar_fonte(self, event: tk.Event):
+        """Redimensiona a fonte quando a janela é redimensionada."""
         self.atualizar_fonte()
 
 if __name__ == "__main__":
