@@ -1,12 +1,10 @@
 import tkinter as tk
 from typing import Optional
 
-# Constantes de teclas
 KEY_YES = "Y"
 KEY_NO = "N"
 KEY_RESTART = "R"
 
-# Estrutura das cenas do jogo
 cenas = [
     {
         "imagem": "🌲🌫️🌲\n🌫️🙎‍♂️🌫️\n🌲🌫️🌲",
@@ -74,7 +72,6 @@ class JogoRPG:
         self.root.bind("<Key>", self.tecla_pressionada)
 
     def exibir_texto(self):
-        """Mostra o texto com efeito de digitação."""
         cena = cenas[self.cena_atual]
         completo = f"{cena['imagem']}\n\n{cena['texto']}"
         if self.char_index <= len(completo):
@@ -83,14 +80,12 @@ class JogoRPG:
             self.root.after(25, self.exibir_texto)
 
     def tecla_pressionada(self, event: tk.Event):
-        """Responde às teclas pressionadas."""
         key = event.keysym.upper()
 
         if key == KEY_RESTART:
             self.ir_para_cena(0)
             return
 
-        # Se for cena final, ignora interações
         if cenas[self.cena_atual]["yes"] is None:
             return
 
@@ -107,14 +102,12 @@ class JogoRPG:
             self.exibir_texto()
 
     def atualizar_fonte(self):
-        """Ajusta o tamanho da fonte de acordo com o tamanho da janela."""
         largura = self.root.winfo_width()
         altura = self.root.winfo_height()
         tamanho = max(10, min(largura // 40, altura // 15))
         self.label.config(font=("Courier", tamanho), wraplength=largura - 50)
 
     def redimensionar_fonte(self, event: tk.Event):
-        """Redimensiona a fonte quando a janela é redimensionada."""
         self.atualizar_fonte()
 
 if __name__ == "__main__":
